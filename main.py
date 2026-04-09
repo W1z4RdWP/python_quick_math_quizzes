@@ -1,10 +1,13 @@
 import time, random
+from typing import Callable
+
+from utils import timer_with_parameter
 
 
 class Quiz:
     def __init__(self, difficulty: int):
         self.difficulty = difficulty
-        self._questions_amount = 0
+        self._questions_amount = 10
         self._correct_answers = 0
         self._current_question = 0
         self._correct_answers = 0
@@ -22,9 +25,8 @@ class Quiz:
 
 
 class MultiplicationQuiz(Quiz):
-    def multiplication_quiz(self, base_num, end_num):
-        self._questions_amount = 10
-        start_time = time.time()
+    @timer_with_parameter(0)
+    def multiplication_quiz(self, base_num: int, end_num: int) -> None:
         while self._current_question < self._questions_amount:
             self._current_question += 1
             num_1 = random.randint(base_num, end_num)
@@ -39,12 +41,10 @@ class MultiplicationQuiz(Quiz):
             else:
                 self._incorrect_answers += 1
                 print(f"Увы :(. \nТвой ответ:{question}\nПравильный ответ: {num_1 * num_2}")
-        end_time = time.time()
-        res_time = end_time - start_time
         print(
-            f"Правильных ответов: {self._correct_answers}/{self._incorrect_answers + self._correct_answers}\nЗаняло времени: {round(res_time, 2)} секунд.")
+            f"Правильных ответов: {self._correct_answers}/{self._incorrect_answers + self._correct_answers}")
 
-    def start_quiz(self):
+    def start_quiz(self)->None:
         """
             Метод для проверки навыков умножения двух чисел
         :return: None
@@ -62,9 +62,8 @@ class MultiplicationQuiz(Quiz):
 
 
 class SummaryQuiz(Quiz):
-    def summary_quiz(self, base_num, end_num):
-        self._questions_amount = 10
-        start_time = time.time()
+    @timer_with_parameter(0)
+    def summary_quiz(self, base_num: int, end_num:int) -> None:
         while self._current_question < self._questions_amount:
             self._current_question += 1
             num_1 = random.randint(base_num, end_num)
@@ -76,12 +75,10 @@ class SummaryQuiz(Quiz):
             else:
                 self._incorrect_answers += 1
                 print(f"Увы :(. \nТвой ответ:{question}\nПравильный ответ: {num_1 + num_2}")
-        end_time = time.time()
-        res_time = end_time - start_time
         print(
-            f"Правильных ответов: {self._correct_answers}/{self._incorrect_answers + self._correct_answers}\nЗаняло времени: {round(res_time, 2)} секунд.")
+            f"Правильных ответов: {self._correct_answers}/{self._incorrect_answers + self._correct_answers}")
 
-    def start_quiz(self):
+    def start_quiz(self) -> None:
         # Легкая сложность
         if self.difficulty == 0:
             self.summary_quiz(1,100)
@@ -93,6 +90,18 @@ class SummaryQuiz(Quiz):
         # Сложная сложность
         if self.difficulty == 2:
             self.summary_quiz(100, 1000)
+
+
+class SequentialArithmeticQuiz(Quiz):
+
+    def sequential_quiz(self, base_num: int, end_num: int) -> None:
+        start_time = time.time()
+
+
+    def start_quiz(self) -> None:
+        if self.difficulty == 0:
+            self.sequential_quiz(1,100)
+
 
 
 if __name__ == "__main__":
