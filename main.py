@@ -12,6 +12,7 @@ class Quiz:
         self._current_question = 0
         self._correct_answers = 0
         self._incorrect_answers = 0
+        self._last_answer = 0
 
     def start_quiz(self):
         # Легкая сложность
@@ -94,26 +95,61 @@ class SummaryQuiz(Quiz):
 
 class SequentialArithmeticQuiz(Quiz):
 
+    @timer_with_parameter(1,10)
     def sequential_quiz(self, base_num: int, end_num: int) -> None:
-        start_time = time.time()
+        num_1 = random.randint(base_num, end_num)
+
+        while True:
+            num_2 = random.randint(base_num, end_num)
+
+            try:
+                answer = int(input(f"{num_1} + {num_2} = "))
+            except ValueError:
+                answer = 0 # Если введено не число, то считаем ответ не верным и продолжаем
+
+            # Проверка правильности
+            if answer == (num_1+num_2):
+                self._correct_answers += 1
+            else:
+                self._incorrect_answers += 1
+
+            self._last_answer = answer
+            num_1 = answer
+
+
+    def __del__(self):
+        """Вывод статистики при удалении объекта."""
+        total = self._correct_answers + self._incorrect_answers
+        if total > 0:
+            print(f"Правильных ответов: {self._correct_answers}/{total}")
+        else:
+            print("Правильных ответов 0/0")
 
 
     def start_quiz(self) -> None:
         if self.difficulty == 0:
             self.sequential_quiz(1,100)
+        elif self.difficulty == 1:
+            self.sequential_quiz(50, 300)
+        elif self.difficulty == 2:
+            self.sequential_quiz(100, 500)
 
 
 
 if __name__ == "__main__":
     summary_choices = ["сложение", "1", 1]
     multiplication_choices = ["умножение", "2", 2]
-    quiz_type = input("Что выбираешь?:\n1) Сложение\n2) Умножение")
+    sequential_choices = ["последовательность", "3", 3]
+    quiz_type = input("Что выбираешь?:\n1) Сложение\n2) Умножение\n3) Последовательность")
     difficulty_choice = int(input("Выбери сложность от 0 до 2: "))
     if quiz_type.lower() in summary_choices:
         quiz = SummaryQuiz(difficulty_choice)
         quiz.start_quiz()
     elif quiz_type.lower() in multiplication_choices:
         quiz = MultiplicationQuiz(difficulty_choice)
+        quiz.start_quiz()
+    elif quiz_type.lower() in sequential_choices:
+        quiz = SequentialArithmeticQuiz(difficulty_choice)
         quiz.start_quiz()
     else:
         print("Заданы неизвестные параметры")

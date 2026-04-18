@@ -1,7 +1,10 @@
-import time
+def add_item(item, lst=None):
+    if lst is None:
+        lst = []
+    lst.append(item)
+    return lst
 
-start_time = time.time()
-time.sleep(2)
-end_time = time.time()
-res_time = end_time - start_time
-print(round(res_time, 3))
+print(add_item(1))
+lst = [1,2]
+print(add_item(2,lst))
+print(add_item(3))

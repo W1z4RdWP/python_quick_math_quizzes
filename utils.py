@@ -1,32 +1,49 @@
 import time
+import threading
+from functools import wraps
 from typing import Callable
 
 
-def timer_with_parameter(is_countdown: int, seconds: int = 0) -> Callable:
+def timer_with_parameter(is_countdown: int = 0, seconds: int = 0) -> Callable:
     """
+    Таймер с параметрами
 
-    :param is_countdown: 0 - если хотим использовать как секундомер, 1 - если используем как таймер.
-    Таймер - задается количество секунд, после которого выполнение функции завершается.
+    :param is_countdown: 0 - если хотим использовать как секундомер, 1 - если используем как таймер; Если используется как Таймер - задается количество секунд, после которого выполнение функции завершается.
     :param seconds: Количество секунд после которого выполнение обернутой функции завершается, для таймера
     :return: Callable
     """
     def timer(func):
+        @wraps(func)
         def wrapper(*args, **kwargs):
-            if is_countdown:
-                start_time = time.time()
-                while time.time() - start_time < seconds:
-                    func(*args, **kwargs)
-                end_time = time.time()
-                res_time = end_time - start_time
+            if is_countdown and seconds > 0:
+                result = [None]
+                exception = [None]
+
+                def target():
+                    try:
+                        result[0] = func(*args, **kwargs)
+                    except Exception as e:
+                        exception[0] = e
+
+                thread = threading.Thread(target=target)
+                thread.daemon = True
+                thread.start()
+                thread.join(seconds)
+
+                if thread.is_alive():
+                    print("Время вышло!")
+                    return
+                if exception[0]:
+                    raise exception[0]
+                return result[0]
             else:
-                start_time = time.time()
-                func(*args, **kwargs)
-                end_time = time.time()
-                res_time = end_time - start_time
-            print("Прошло времени: ", round(res_time,2), "секунд")
-            return round(res_time,2)
+                start = time.time()
+                res = func(*args, **kwargs)
+                print(f"Прошло времени: {round(time.time() - start, 2)} сек.")
+                return res
         return wrapper
     return timer
+
 
 
 if __name__ == "__main__":
