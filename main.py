@@ -8,7 +8,6 @@ class Quiz:
     def __init__(self, difficulty: int):
         self.difficulty = difficulty
         self._questions_amount = 10
-        self._correct_answers = 0
         self._current_question = 0
         self._correct_answers = 0
         self._incorrect_answers = 0
@@ -22,7 +21,6 @@ class Quiz:
         # Средняя сложность
         if self.difficulty == 1:
             print("Выбери тип теста")
-
 
 
 class MultiplicationQuiz(Quiz):
@@ -96,7 +94,7 @@ class SummaryQuiz(Quiz):
 class SequentialArithmeticQuiz(Quiz):
 
     @timer_with_parameter(1,10)
-    def sequential_quiz(self, base_num: int, end_num: int) -> None:
+    def sequential_quiz(self, base_num: int, end_num: int) -> int:
         num_1 = random.randint(base_num, end_num)
 
         while True:

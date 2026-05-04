@@ -18,20 +18,38 @@ def timer_with_parameter(is_countdown: int = 0, seconds: int = 0) -> Callable:
             if is_countdown and seconds > 0:
                 result = [None]
                 exception = [None]
+                stats=[None]
 
                 def target():
                     try:
                         result[0] = func(*args, **kwargs)
+
+                        # После выполнения функции забираем статистику из объекта
+                        if args and hasattr(args[0], '_correct_answers'):
+                            obj = args[0]
+                            correct = getattr(obj, '_correct_answers', 0)
+                            incorrect = getattr(obj, '_incorrect_answers', 0)
+                            stats[0] = (correct, correct+incorrect)
                     except Exception as e:
                         exception[0] = e
 
-                thread = threading.Thread(target=target)
+                thread = threading  .Thread(target=target)
                 thread.daemon = True
                 thread.start()
                 thread.join(seconds)
 
                 if thread.is_alive():
                     print("Время вышло!")
+                    if stats[0]:
+                        correct, total = stats[0]
+                        print(f"Правильных ответов: {correct}/{total}")
+                    elif args and hasattr(args[0], '_correct_answers'):
+                        obj = args[0]
+                        correct = getattr(obj, '_correct_answers', 0)
+                        incorrect = getattr(obj, '_incorrect_answers', 0)
+                        print(f"Правильных ответов: {correct}/{correct+incorrect}")
+                    else:
+                        print("Без результата")
                     return
                 if exception[0]:
                     raise exception[0]
